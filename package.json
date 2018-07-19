@@ -1,0 +1,35 @@
+{
+  "name": "bajablast",
+  "version": "1.0.0",
+  "description": "1. Install Node.js and npm",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Kellan Baker",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "host-validation": "^1.1.0",
+    "http": "0.0.0",
+    "mongodb": "^3.1.1",
+    "mongodb-stitch": "^3.1.7",
+    "nodemon": "^1.18.2",
+    "socket.io": "^2.1.1",
+    "sockjs": "^0.3.19",
+    "threads": "^0.12.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kbaker23/BajaBlast.git"
+  },
+  "keywords": [
+    "nodejs"
+  ],
+  "bugs": {
+    "url": "https://github.com/kbaker23/BajaBlast/issues"
+  },
+  "homepage": "https://github.com/kbaker23/BajaBlast#readme"
+}
