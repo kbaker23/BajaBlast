@@ -1,6 +1,6 @@
 # BajaBlast
 
-###To run game server:
+### To run game server:
   
   1. Install Node.js and npm
   
@@ -26,7 +26,7 @@
       node main.js
   ```
       
-###To make calls:
+### To make calls:
 
 Insert script into HTML page.
 ```
@@ -37,13 +37,13 @@ Initialize SockJS instance.
      const sockjs = new SockJS('api');
 ```
 
-###To send data:
+### To send data:
 ```
     sockjs.send(<data>);
 ```
     ****data must be a string****
     ****To send JSON, use JSON.stringify****
-###To recieve data:
+### To recieve data:
 ```
     sockjs.onmessage = function(msg){
         const json = parse(msg.data);
