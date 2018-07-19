@@ -27,11 +27,14 @@ To run game server:
   ```
       
 To make calls:
-     Insert <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-     into HTML page
-     ```
+
+Insert script into HTML page.
+```
+     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+```
+```
      const sockjs = new SockJS('api');
-     ```
+```
 
 To send data:
 ```
