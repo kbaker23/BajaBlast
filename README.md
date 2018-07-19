@@ -5,11 +5,11 @@ To run game server:
   1. Install Node.js and npm
   
   2. Install dependencies
-      npm install --save sockjs
-      npm install --save express
-      npm install --save http
-      npm install --save mongodb-stitch
-      npm install --save host-validation
+  npm install --save sockjs
+  npm install --save express
+  npm install --save http
+  npm install --save mongodb-stitch
+  npm install --save host-validation
       
   3. Run main.js
       node main.js
