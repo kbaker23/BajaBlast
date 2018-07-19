@@ -1,0 +1,41 @@
+<html>
+<head>
+
+</head>
+
+<body>
+<input id='input'></input>
+<button id='b'></button>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script type="text/javascript">
+
+const sock = new SockJS('http://localhost/api');
+sock.onopen = function(){
+	const to_send = JSON.stringify({event: 'createGame', data: {name: 'game', settings: {tasksPerLevel: 10, size: 5}}});
+	sock.send(to_send);
+	
+}
+sock.onmessage = function(msg){
+	const data = JSON.parse(msg.data);
+	console.log(data);
+}
+sock.onheartbeat = function(){
+	console.log("heartbeat");
+}
+sock.onclose = function(){
+	console.log('close');
+}
+
+document.getElementById('b').onclick = function(e){
+	e.preventDefault();
+	const val = document.getElementById('input').value
+	sock.send(JSON.stringify({event: 'startGame', data: {gameid: val}}));
+};
+
+
+</script>
+</body>
+
+
+</html>
