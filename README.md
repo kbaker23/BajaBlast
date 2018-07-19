@@ -49,3 +49,5 @@ To recieve data:
         const json = parse(msg.data);
     };
 ```
+
+For more info on SockJS, see https://github.com/sockjs/sockjs-client and https://github.com/sockjs/sockjs-node
