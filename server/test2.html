@@ -1,0 +1,28 @@
+<html>
+<head>
+
+</head>
+
+<body>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script type="text/javascript">
+
+const sock = new SockJS('http://localhost:80/api');
+sock.onopen = function(){
+	console.log('open');
+	
+	sock.send(JSON.stringify({event: 'joinGame', data: {gameid: 'IRXK7D', player: {name: 'Nelson'}}}));
+}
+sock.onmessage = function(msg){
+	console.log(msg.data);
+}
+sock.onclose = function(){
+	console.log('close');
+}
+
+
+</script>
+</body>
+
+
+</html>
