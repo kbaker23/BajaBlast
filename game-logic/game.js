@@ -235,7 +235,10 @@ function selectTasks(tasks, tpl, players){
 		const rand = Math.floor(Math.random() * tasks.length);
 		const task = tasks[rand];
 		task.Level = LEVEL[task.Level];
-		task.Task = selectWildcards(task);
+		const t = selectWildcards(task);
+		if(t){
+			task.Task = t;
+		}
 		select.push(task);
 		tasks.splice(rand, 1);
 	}
