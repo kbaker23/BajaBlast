@@ -8,7 +8,7 @@ module.exports.Server = class Server{
 	
 	constructor(name, port){
 		this.host = name;
-		this.port = port;
+		this.port = process.env.PORT || 5000;
 		
 		this.app = express();
 		this.server = http.Server(this.app);
