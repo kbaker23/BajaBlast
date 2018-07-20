@@ -21,11 +21,7 @@ module.exports.Server = class Server{
 	}
 	
 	setRoutes(){
-		this.app.use(validation({
-			hosts: ['127.0.0.1',
-					'localhost',
-					'localhost/api'],
-		}));
+		
 		
 		this.app.get('/', function(req, res){
 			res.status(200).send('home');
