@@ -21,9 +21,9 @@
   npm install --save host-validation
   ```
       
-  3. Run main.js
+  3. Run index.js
   ```
-      node main.js
+      node index.js
   ```
       
 ### To make calls:
@@ -34,7 +34,11 @@ Insert script into HTML page.
 ```
 Initialize SockJS instance.
 ```
-     const sockjs = new SockJS('api');
+     const sockjs = new SockJS('http://the-twisted-game.herokuapp.com/api');
+```
+Or, if run on localhost on your computer
+```
+     const sockjs = new SockJS('http://localhost:5000/api');
 ```
 
 ### To send data:
