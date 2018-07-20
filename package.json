@@ -2,10 +2,10 @@
   "name": "bajablast",
   "version": "1.0.0",
   "description": "1. Install Node.js and npm",
-  "main": "main.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node main.js"
+    "start": "node server.js"
   },
   "author": "Kellan Baker",
   "license": "ISC",
