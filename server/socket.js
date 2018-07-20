@@ -26,7 +26,7 @@ module.exports.createDatabase = async function(name){
 
 const sockets_lst = {};
 module.exports.createSocket = function(server){
-	const sock = sockjs.createServer({sockjs_url: "http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js", heartbeat_delay: 25, log: function(severity, msg){
+	const sock = sockjs.createServer({sockjs_url: "http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js", log: function(severity, msg){
 		console.log(severity, msg);
 	}
 	});
@@ -77,6 +77,7 @@ function setEvents(socket, callback){
 	});
 	socket.on('close', function(){
 		removeSocketList(socket);
+		console.log('close');
 	});
 }
 
