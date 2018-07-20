@@ -15,7 +15,7 @@ module.exports.Server = class Server{
 	}
 	
 	start(){
-		this.server.listen(this.port, this.host, () => {
+		this.server.listen(this.port, () => {
 			console.log("Listening on http://"+this.host+":"+this.port);
 		});
 	}
