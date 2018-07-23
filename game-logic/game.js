@@ -239,6 +239,12 @@ function selectTasks(tasks, tpl, players){
 		if(t){
 			task.Task = t;
 		}
+		const twist = selectTwist(task.Twist);
+		if(twist){
+			task.Twist = twist;
+		}
+		task.Drinks = selectDrinks(task.Drinks);
+		
 		select.push(task);
 		tasks.splice(rand, 1);
 	}
@@ -250,12 +256,25 @@ function selectWildcards(task){
 	
 	const wc = task.Wildcard.split(',');
 	const desc = task.Task;
+	const new_wc = wc[ Math.floor(Math.random() * wc.length)];
+	return desc.replace(/\*/g,  new_wc);
+}
+
+function selectTwist(twist){
+	if(!twist) return;
 	
-	return desc.replace(W_REG, (match) => {
-		const i = Math.floor(Math.random() * wc.length);
-		wc.splice(i, 1);
-		return wc[i];
-	});
+	const twists = twist.split(',');
+	return twists[Math.floor(Math.random() * twists.length);
+	
+	
+}
+
+function selectDrinks(drinks){
+	if(!drinks) return 1;
+	
+	const d = drinks.split(',');
+	return d[Math.floor(Math.random() * d.length)];
+	
 }
 
 
