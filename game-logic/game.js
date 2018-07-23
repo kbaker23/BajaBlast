@@ -264,7 +264,7 @@ function selectTwist(twist){
 	if(!twist) return;
 	
 	const twists = twist.split(',');
-	return twists[Math.floor(Math.random() * twists.length);
+	return twists[Math.floor(Math.random() * twists.length)];
 	
 	
 }
