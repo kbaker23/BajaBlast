@@ -243,6 +243,7 @@ function selectTasks(tasks, tpl, players){
 		if(twist){
 			task.Twist = twist;
 		}
+		console.log(task);
 		task.Drinks = selectDrinks(task.Drinks);
 		
 		select.push(task);
@@ -270,8 +271,10 @@ function selectTwist(twist){
 }
 
 function selectDrinks(drinks){
-	if(!drinks) return 1;
-	console.log(drinks);
+	if(!drinks) return "1";
+	if(isNaN(drinks)) return "1";
+	if(!drinks.split) return "1";
+	
 	const d = drinks.split(',');
 	return d[Math.floor(Math.random() * d.length)];
 	
