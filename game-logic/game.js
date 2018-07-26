@@ -271,7 +271,7 @@ function selectTwist(twist){
 
 function selectDrinks(drinks){
 	if(!drinks) return 1;
-	
+	console.log(drinks);
 	const d = drinks.split(',');
 	return d[Math.floor(Math.random() * d.length)];
 	
