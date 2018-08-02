@@ -160,12 +160,12 @@ function startGame(data){
 					return error('Invalid game settings format');
 				}
 				const tpl = game_data.settings.tasksPerLevel;
-				const first = selectTasks(res.first, tpl);
-				const second = selectTasks(res.second, tpl);
-				const third = selectTasks(res.third, tpl);
-				const fourth = selectTasks(res.fourth, tpl);
-				const end = selectTasks(res.end, tpl);
-				const any = selectTasks(res.any, tpl);
+				const first = selectTasks(res.first, tpl, game_data.players, 0%game_data.players.length);
+				const second = selectTasks(res.second, tpl, game_data.players, 1%game_data.players.length);
+				const third = selectTasks(res.third, tpl, game_data.players, 2%game_data.players.length);
+				const fourth = selectTasks(res.fourth, tpl, game_data.players, 3%game_data.players.length);
+				const end = selectTasks(res.end, tpl, game_data.players, 4%game_data.players.length);
+				const any = selectTasks(res.any, tpl, game_data.players, 5%game_data.players.length);
 								
 				GAMES[data.gameid]['start'] = true;
 				return succ({
@@ -227,7 +227,7 @@ function getTasks(){
 	
 }
 
-function selectTasks(tasks, tpl, players){
+function selectTasks(tasks, tpl, players, cur){
 	const select = [];
 	
 	const s = Math.min(tasks.length, tpl);
@@ -243,13 +243,71 @@ function selectTasks(tasks, tpl, players){
 		if(twist){
 			task.Twist = twist;
 		}
-		console.log(task);
 		task.Drinks = selectDrinks(task.Drinks);
+		task.Task = selectPlayers(task.Task, players, cur);
 		
 		select.push(task);
 		tasks.splice(rand, 1);
+		
+		cur++;
+		if(cur >= players.length){
+			cur = 0;
+		}
 	}
 	return select;
+}
+
+function selectPlayers(task, players, cur_player){
+	if(!players || !players.length || !task) return "";
+	
+	if(players.length <= 0){
+		return task;		
+	}
+	
+	let temp = players;
+	
+	const single = task.match(/@[^\d]{1}|@$/g);
+	const spec = task.match(/@[\d]{1}/g);
+	if(!single || single.length === 0){
+		if(!spec) return task;
+		const p = [temp[cur_player]];
+		temp.splice(cur_player, 1);
+		task = task.replace(/@1/, p[0]);
+		let count = 1;
+		while(count < spec.length){
+			const rand = Math.floor(Math.random() * temp.length);
+			task = task.replace(new RegExp('@'+(++count)), temp[rand]);
+			temp.splice(rand, 1);
+			count++;
+		}
+	}
+	else{
+		let count = 0;
+		for(let i=cur_player; count<single.length; i++){
+			if(i >= players.length ){
+				i=-1;
+				continue;
+			}
+			
+			if(i===cur_player){
+				task = task.replace(/@/, temp[i]);
+				temp.splice(i,1);
+			}
+			else{
+				const rand = Math.floor(Math.random() * temp.length);
+				task = task.replace(/@/, temp[rand]);
+				temp.splice(rand, 1);
+			}
+			
+			count++;
+			
+			if(i === cur_player - 1) break;
+		}
+		
+		
+	}
+	
+	return task;
 }
 
 function selectWildcards(task){
