@@ -1,4 +1,4 @@
-
+const Tasks = require('./tasks.js');
 'use strict';
 
 const P_REG = '@';
@@ -10,18 +10,14 @@ const EVENTS = {
 	'startGame': startGame
 }
 
-const LEVEL = {
-	'first': 0,
-	'second': 1,
-	'third': 2,
-	'fourth': 3,
-	'end': 4,
-	'any': -1
-}
-
 const GAMES = {};
 
 const ID_VALS = ['Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L','Z','X','C','V','B','N','M','1','2','3','4','5','6','7','8','9','0','q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m','!','@','#','$','%','&','*','?','+','=','-'];
+
+/**
+* Generates a random id for a game.
+* @return string - Game ID
+*/
 function genId(){
 	let id = '';
 	for(let i = 0; i < 6; i++){
@@ -36,6 +32,20 @@ class Game{
 		
 	}
 	
+	/**
+	* creates a new game given an already created game data or a game name and 
+	* settings for the game.
+	* @param game - JSON - Game data of previously created game. False if creating
+			a new game.
+				-name: name of game
+				-settings: settings for the game
+				-gameid: Game ID
+				-players: Players in the game
+	* @param name - String - Name for the game
+	* @param settings - JSON - Settings for the game.
+				-tasksPerLevel: The number of tasks per level
+				-size: The max number of players in the game
+	*/
 	newGame(game, name, settings){
 		this.start = false;
 		if(game){
@@ -63,11 +73,21 @@ class Game{
 		}
 	}
 	
+	/**
+	* Adds a player to the game
+	* @param player - JSON - The player to add
+				-name: The player's name
+	*/
 	addPlayer(player){
 		this.players.push(player);
 		GAMES[this.gameid].players = this.players;
 	}
 	
+	/**
+	* Removes a player from the game.
+	* @param player - JSON - The player to removeAttribute
+			-name: The player's name
+	*/
 	removePlayer(player){
 		this.players = this.players.filter( (p) => {
 			return player !== p;
@@ -76,29 +96,61 @@ class Game{
 }
 
 let db = '';
+/**
+* Sets the database instance.
+* @param dbase - MongoDB promise - The MongoDB promise for tasks.
+*/
 module.exports.setDatabase = function(dbase){
 	db = dbase;
 }
 
+/**
+* Handles the different event calls to the server for the game.
+* @param event - String - The event
+* @param data - JSON - The data for the event
+* @param callback - Function - The callback to the server to send back to client
+*/
 module.exports.eventHandler = function(event, data, callback){
 	if(event === 'startGame'){
-		EVENTS[event](data).then(res => {
+		Promise.resolve(EVENTS[event](data)).then( res => {
 			callback(res);
 		});
+		
 	}
 	else{
 		callback(EVENTS[event](data));
 	}
 }
 
+/**
+* Sets up a success return JSON 
+* @param data - JSON - The data to be returned
+* @return JSON - The return data
+		-data: the data to be returned
+		-success: true
+*/
 function succ(data){
 	return {data: data, success: true};
 }
 
+/**
+* Sets up an error return JSON
+* @param msg - String - The error message
+* @return JSON - The return error message
+		-data: 
+			-error: the error message
+		-success: false
+*/
 function error(msg){
 	return {data: {error: msg}, success: false};
 }
 
+
+/**
+* Event to create a game.
+* @param data - JSON - The game data to create a new game.
+* @return JSON - Returns the result of creating a game.
+*/
 function createGame(data){
 	
 	try{
@@ -114,6 +166,12 @@ function createGame(data){
 	}
 }
 
+/**
+* Event to join a game.
+* @param data - JSON - The data to join a game. Needs the gameid for the game and 
+		player information
+* @return JSON - Returns the result of joining a game
+*/
 function joinGame(data){
 	try{
 		if(!data['gameid'] || !data['player']){
@@ -141,203 +199,45 @@ function joinGame(data){
 	}
 }
 
+/**
+* Event to start and select all tasks for the game.
+* @param data - JSON - The data to start a game. Need gameid for the game.
+* @return JSON - Returns the list of tasks for the game.
+*/
 function startGame(data){
 	try{
-		const tasks_prom = getTasks();
-		return tasks_prom.then(res => {
-			if(res === 0){
-				return error('Error reading from database.');
+		if(!data || !data['gameid']){
+			return error('Invalid data format.');
+		}
+		
+		const game_data = GAMES[data.gameid];
+		if(!game_data.players || game_data.players.length === 0){
+			return error('No players have joined the game.');
+		}
+		
+		if(game_data){
+			if(game_data['start']){
+				return error('Game already started.');
 			}
-			if(!data['gameid']){
-				return error('Invalid data format.');
+			if(!(game_data['settings'] && game_data.settings['tasksPerLevel'])){
+				return error('Invalid game settings format.');
 			}
-			const game_data = GAMES[data.gameid];
-			if(game_data){
-				if(game_data['start']){
-					return error('Game already started.');
-				}
-				if(!(game_data['settings'] && game_data.settings['tasksPerLevel'])){
-					return error('Invalid game settings format');
-				}
-				const tpl = game_data.settings.tasksPerLevel;
-				const first = selectTasks(res.first, tpl, game_data.players, 0%game_data.players.length);
-				const second = selectTasks(res.second, tpl, game_data.players, 1%game_data.players.length);
-				const third = selectTasks(res.third, tpl, game_data.players, 2%game_data.players.length);
-				const fourth = selectTasks(res.fourth, tpl, game_data.players, 3%game_data.players.length);
-				const end = selectTasks(res.end, tpl, game_data.players, 4%game_data.players.length);
-				const any = selectTasks(res.any, tpl, game_data.players, 5%game_data.players.length);
-								
+			
+			const tasks_prom = Tasks.getTasks(db, game_data);
+			return tasks_prom.then(res => {
 				GAMES[data.gameid]['start'] = true;
-				return succ({
-					gameid: game_data.gameid,
-					players: game_data.players,
-					first: first,
-					second: second,
-					third: third,
-					fourth: fourth,
-					end: end,
-					any: any
-				});
-			}
-			else{
-				return error('Game does not exist.');
-			}
-		}).catch(err =>{
-			console.log(err);
-			return error('Error starting game.');
-		});
+				return res;
+			})
+			.catch(err=> {
+				return error('Error retrieving tasks.');
+			});
+			
+		}
+		else{
+			return error('Game does not exist.');
+		}		
 	}
 	catch(err){
 		return error('Unable to start game');
 	}
 }
-
-function getTasks(){
-	const tasks = {};
-	const error = {};
-		
-	return db.getCol('first')
-	.then(res => {
-		tasks['first'] = res;	
-		return db.getCol('second');
-	})
-	.then(res => {
-		tasks['second'] = res;
-		return db.getCol('third');
-	})
-	.then(res => {
-		tasks['third'] = res;
-		return db.getCol('fourth');
-	})
-	.then(res => {
-		tasks['fourth'] = res;
-		return db.getCol('end');
-	})
-	.then(res => {
-		tasks['end'] = res;
-		return db.getCol('any');
-	})
-	.then(res => {
-		tasks['any'] = res;
-		return tasks;
-	})
-	.catch(err => {
-		return 0;
-	});
-	
-}
-
-function selectTasks(tasks, tpl, players, cur){
-	const select = [];
-	
-	const s = Math.min(tasks.length, tpl);
-	for(let i=0; i< s; i++){
-		const rand = Math.floor(Math.random() * tasks.length);
-		const task = tasks[rand];
-		task.Level = LEVEL[task.Level];
-		const t = selectWildcards(task);
-		if(t){
-			task.Task = t;
-		}
-		const twist = selectTwist(task.Twist);
-		if(twist){
-			task.Twist = twist;
-		}
-		task.Drinks = selectDrinks(task.Drinks);
-		task.Task = selectPlayers(task.Task, players, cur);
-		
-		select.push(task);
-		tasks.splice(rand, 1);
-		
-		cur++;
-		if(cur >= players.length){
-			cur = 0;
-		}
-	}
-	return select;
-}
-
-function selectPlayers(task, players, cur_player){
-	if(!players || !players.length || !task) return "";
-	
-	if(players.length <= 0){
-		return task;		
-	}
-	
-	let temp = players;
-	
-	const single = task.match(/@[^\d]{1}|@$/g);
-	const spec = task.match(/@[\d]{1}/g);
-	if(!single || single.length === 0){
-		if(!spec) return task;
-		const p = [temp[cur_player]];
-		temp.splice(cur_player, 1);
-		task = task.replace(/@1/, p[0]);
-		let count = 1;
-		while(count < spec.length){
-			const rand = Math.floor(Math.random() * temp.length);
-			task = task.replace(new RegExp('@'+(++count)), temp[rand]);
-			temp.splice(rand, 1);
-			count++;
-		}
-	}
-	else{
-		let count = 0;
-		for(let i=cur_player; count<single.length; i++){
-			if(i >= players.length ){
-				i=-1;
-				continue;
-			}
-			
-			if(i===cur_player){
-				task = task.replace(/@/, temp[i]);
-				temp.splice(i,1);
-			}
-			else{
-				const rand = Math.floor(Math.random() * temp.length);
-				task = task.replace(/@/, temp[rand]);
-				temp.splice(rand, 1);
-			}
-			
-			count++;
-			
-			if(i === cur_player - 1) break;
-		}
-		
-		
-	}
-	
-	return task;
-}
-
-function selectWildcards(task){
-	if(!task['Wildcard']) return;
-	
-	const wc = task.Wildcard.split(',');
-	const desc = task.Task;
-	const new_wc = wc[ Math.floor(Math.random() * wc.length)];
-	return desc.replace(/\*/g,  new_wc);
-}
-
-function selectTwist(twist){
-	if(!twist) return;
-	
-	const twists = twist.split(',');
-	return twists[Math.floor(Math.random() * twists.length)];
-	
-	
-}
-
-function selectDrinks(drinks){
-	if(!drinks) return "1";
-	if(isNaN(drinks)) return "1";
-	if(!drinks.split) return "1";
-	
-	const d = drinks.split(',');
-	return d[Math.floor(Math.random() * d.length)];
-	
-}
-
-
-
-
