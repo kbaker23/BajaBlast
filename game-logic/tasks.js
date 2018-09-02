@@ -147,9 +147,10 @@ function selectTasks(tasks, tpl, players, cur){
 		while(t === -1){
 			rand = Math.floor(Math.random() * tasks.length);
 			task = tasks[rand];
+			tasks.splice(rand, 1);
 			task.Level = LEVEL[task.Level];
 			t = selectPlayers(task.Task, players, cur);
-			console.log(t);
+			console.log(task, t);
 		}
 		task.Task = t;
 		t = selectWildcards(task);
@@ -165,9 +166,7 @@ function selectTasks(tasks, tpl, players, cur){
 		
 		
 		
-		select.push(task);
-		tasks.splice(rand, 1);
-		
+		select.push(task);		
 		cur++;
 		if(cur >= players.length){
 			cur = 0;
