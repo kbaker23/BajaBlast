@@ -144,7 +144,7 @@ function selectTasks(tasks, tpl, players, cur){
 		let task = tasks[rand];
 		task.Level = LEVEL[task.Level];
 		let t = selectPlayers(task.Task, players, cur);
-		while(t != -1){
+		while(t !== -1){
 			rand = Math.floor(Math.random() * tasks.length);
 			task = tasks[rand];
 			task.Level = LEVEL[task.Level];
