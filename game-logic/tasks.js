@@ -152,6 +152,7 @@ function selectTasks(tasks, tpl, players, cur){
 			task.Twist = twist;
 		}
 		task.Drinks = selectDrinks(task.Drinks);
+		console.log(players);
 		task.Task = selectPlayers(task.Task, players, cur);
 		
 		select.push(task);
