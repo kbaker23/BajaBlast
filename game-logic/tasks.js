@@ -143,7 +143,15 @@ function selectTasks(tasks, tpl, players, cur){
 		const rand = Math.floor(Math.random() * tasks.length);
 		const task = tasks[rand];
 		task.Level = LEVEL[task.Level];
-		let t = selectWildcards(task);
+		let t = selectPlayers(task.Task, players, cur);
+		while(t != -1){
+			const rand = Math.floor(Math.random() * tasks.length);
+			const task = tasks[rand];
+			task.Level = LEVEL[task.Level];
+			t = selectPlayers(task.Task, players, cur);
+		}
+		task.Task = t;
+		t = selectWildcards(task);
 		if(t){
 			task.Task = t;
 		}
@@ -152,19 +160,16 @@ function selectTasks(tasks, tpl, players, cur){
 			task.Twist = twist;
 		}
 		task.Drinks = selectDrinks(task.Drinks);
-		t = selectPlayers(task.Task, players, cur);
+	
 		
-		if(t === -1){
-			i--;
-		}
-		else{
-			select.push(task);
-			tasks.splice(rand, 1);
-			
-			cur++;
-			if(cur >= players.length){
-				cur = 0;
-			}
+		
+		
+		select.push(task);
+		tasks.splice(rand, 1);
+		
+		cur++;
+		if(cur >= players.length){
+			cur = 0;
 		}
 	}
 	return select;
