@@ -211,6 +211,9 @@ function startGame(data){
 		}
 		
 		const game_data = GAMES[data.gameid];
+		if(!game_data){
+			return error('Invalid game id.');
+		}
 		if(!game_data.players || game_data.players.length === 0){
 			return error('No players have joined the game.');
 		}
