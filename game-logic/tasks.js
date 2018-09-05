@@ -140,18 +140,27 @@ function selectTasks(tasks, tpl, players, cur){
 	
 	const s = Math.min(tasks.length, tpl);
 	for(let i=0; i< s; i++){
+		if(tasks.length <= 0){
+			break;
+		}
+		
 		let rand = Math.floor(Math.random() * tasks.length);
 		let task = tasks[rand];
-		task.Level = LEVEL[task.Level];
+		tasks.splice(rand, 1);
+		
 		let t = selectPlayers(task.Task, players, cur);
+		
 		while(t === -1){
+			if(tasks.length <= 0){
+				break;
+			}
+			
 			rand = Math.floor(Math.random() * tasks.length);
 			task = tasks[rand];
 			tasks.splice(rand, 1);
-			task.Level = LEVEL[task.Level];
 			t = selectPlayers(task.Task, players, cur);
-			console.log(task, t);
 		}
+		task.Level = LEVEL[task.Level];
 		task.Task = t;
 		t = selectWildcards(task);
 		if(t){

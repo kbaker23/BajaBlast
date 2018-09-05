@@ -226,9 +226,14 @@ function startGame(data){
 				return error('Invalid game settings format.');
 			}
 			
-			const tasks_prom = Tasks.getTasks(db, game_data);
+			const start = new Date();
+			const tasks_prom = Tasks.getTasks(db, game_data);			
+			
 			return tasks_prom.then(res => {
 				GAMES[data.gameid]['start'] = true;
+				const end = new Date();
+				const dif = end - start;
+				console.log(dif);
 				return res;
 			})
 			.catch(err=> {
