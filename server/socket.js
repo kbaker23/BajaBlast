@@ -12,7 +12,7 @@ const EVENTS = {
 const SOCKET_INFO = {
 	server: '',
 	players: {
-		
+
 	},
 	lastUpdate: ''
 };
@@ -40,39 +40,40 @@ module.exports.start = function(sock, dbase, callback){
 		setEvents(socket, callback);
 	});
 }
-	
-	
+
+
 function setEvents(socket, callback){
-	const sockets = []; 
-	
+	const sockets = [];
+
 	socket.on('data', function(e){
 		try{
 			const json = read(e);
 			if(json === 0){
-				send(socket, {event: 'error', error: true, data: {msg: 'Invalid json format.'}});
+				send(socket, {event: json.event, error: true, data: {msg: 'Invalid json format.'}});
 				return;
 			}
 			if(!(json.event && json.data)){
-				send(socket, {event: 'error', error: true, data: {msg: 'Invalid data format.'}});
+				send(socket, {event: json.event, error: true, data: {msg: 'Invalid data format.'}});
 				return;
 			}
 			if(!EVENTS[json.event]){
-				send(socket, {event: 'error', error: true, data: {msg: 'Invalid event.'}});
+				send(socket, {event: json.event, error: true, data: {msg: 'Invalid event.'}});
 				return;
 			}
 			callback(json.event, json.data, (res) => {
 				if(res.success){
 					EVENTS[json.event](res, socket);
-					send(socket, {error: false, data: res.data});
+					send(socket, {event: json.event, error: false, data: res.data});
 				}
 				else{
 					send(socket, {event: json.event, error: true, data: {msg: res.data.error}});
 				}
 			});
-			
+
 		}
 		catch(err){
-			send(socket, {error: true, data: {msg: 'An error occurred on the server.'}});
+			console.log(err);
+			send(socket, {event: json.event, error: true, data: {msg: 'An error occurred on the server.'}});
 		}
 	});
 	socket.on('close', function(){
@@ -101,7 +102,6 @@ function createSocketList(res, socket){
 		lastUpdate: +new Date
 	};
 	sockets_lst[res.data.gameid] = si;
-	console.log(sockets_lst);
 }
 
 function addSocket(res, socket){
