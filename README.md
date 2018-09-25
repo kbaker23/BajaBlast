@@ -15,7 +15,7 @@
   npm install --save http
   ```
   ```
-  npm install --save mongodb-stitch
+  npm install --save mongodb-stitch-server-sdk
   ```
   ```
   npm install --save host-validation
