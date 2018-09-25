@@ -10,7 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script type="text/javascript">
 
-const sock = new SockJS('http://localhost/api');
+const sock = new SockJS('https://the-twisted-game.herokuapp.com/api');
 sock.onopen = function(){
 	const to_send = JSON.stringify({event: 'createGame', data: {name: 'game', settings: {tasksPerLevel: 10, size: 5}}});
 	sock.send(to_send);

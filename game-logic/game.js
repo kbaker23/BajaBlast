@@ -27,13 +27,13 @@ function genId(){
 }
 
 class Game{
-	
+
 	constructor(){
-		
+
 	}
-	
+
 	/**
-	* creates a new game given an already created game data or a game name and 
+	* creates a new game given an already created game data or a game name and
 	* settings for the game.
 	* @param game - JSON - Game data of previously created game. False if creating
 			a new game.
@@ -72,7 +72,7 @@ class Game{
 			};
 		}
 	}
-	
+
 	/**
 	* Adds a player to the game
 	* @param player - JSON - The player to add
@@ -82,7 +82,7 @@ class Game{
 		this.players.push(player);
 		GAMES[this.gameid].players = this.players;
 	}
-	
+
 	/**
 	* Removes a player from the game.
 	* @param player - JSON - The player to removeAttribute
@@ -115,7 +115,7 @@ module.exports.eventHandler = function(event, data, callback){
 		Promise.resolve(EVENTS[event](data)).then( res => {
 			callback(res);
 		});
-		
+
 	}
 	else{
 		callback(EVENTS[event](data));
@@ -123,7 +123,7 @@ module.exports.eventHandler = function(event, data, callback){
 }
 
 /**
-* Sets up a success return JSON 
+* Sets up a success return JSON
 * @param data - JSON - The data to be returned
 * @return JSON - The return data
 		-data: the data to be returned
@@ -137,7 +137,7 @@ function succ(data){
 * Sets up an error return JSON
 * @param msg - String - The error message
 * @return JSON - The return error message
-		-data: 
+		-data:
 			-error: the error message
 		-success: false
 */
@@ -152,7 +152,7 @@ function error(msg){
 * @return JSON - Returns the result of creating a game.
 */
 function createGame(data){
-	
+
 	try{
 		if(!data['name'] || !data['settings']){
 			return error('Invalid data format');
@@ -162,13 +162,14 @@ function createGame(data){
 		return succ({gameid: game.gameid});
 	}
 	catch(err){
+		console.log(err);
 		return error('Unable to create the game.');
 	}
 }
 
 /**
 * Event to join a game.
-* @param data - JSON - The data to join a game. Needs the gameid for the game and 
+* @param data - JSON - The data to join a game. Needs the gameid for the game and
 		player information
 * @return JSON - Returns the result of joining a game
 */
@@ -195,6 +196,7 @@ function joinGame(data){
 		}
 	}
 	catch(err){
+		console.log(err);
 		return error('Unable to join game.');
 	}
 }
@@ -209,7 +211,7 @@ function startGame(data){
 		if(!data || !data['gameid']){
 			return error('Invalid data format.');
 		}
-		
+
 		const game_data = GAMES[data.gameid];
 		if(!game_data){
 			return error('Invalid game id.');
@@ -217,7 +219,7 @@ function startGame(data){
 		if(!game_data.players || game_data.players.length === 0){
 			return error('No players have joined the game.');
 		}
-		
+
 		if(game_data){
 			if(game_data['start']){
 				return error('Game already started.');
@@ -225,10 +227,10 @@ function startGame(data){
 			if(!(game_data['settings'] && game_data.settings['tasksPerLevel'])){
 				return error('Invalid game settings format.');
 			}
-			
+
 			const start = new Date();
-			const tasks_prom = Tasks.getTasks(db, game_data);			
-			
+			const tasks_prom = Tasks.getTasks(db, game_data);
+
 			return tasks_prom.then(res => {
 				GAMES[data.gameid]['start'] = true;
 				const end = new Date();
@@ -239,13 +241,14 @@ function startGame(data){
 			.catch(err=> {
 				return error('Error retrieving tasks.');
 			});
-			
+
 		}
 		else{
 			return error('Game does not exist.');
-		}		
+		}
 	}
 	catch(err){
+		console.log(err);
 		return error('Unable to start game');
 	}
 }

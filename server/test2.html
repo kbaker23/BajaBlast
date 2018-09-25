@@ -7,11 +7,11 @@
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script type="text/javascript">
 
-const sock = new SockJS('http://localhost:80/api');
+const sock = new SockJS('http://the-twisted-game.herokuapp.com/api');
 sock.onopen = function(){
 	console.log('open');
 	
-	sock.send(JSON.stringify({event: 'joinGame', data: {gameid: 'IRXK7D', player: {name: 'Nelson'}}}));
+	sock.send(JSON.stringify({event: 'joinGame', data: {gameid: "O*cFQZ", player: {name: 'Jake'}}}));
 }
 sock.onmessage = function(msg){
 	console.log(msg.data);

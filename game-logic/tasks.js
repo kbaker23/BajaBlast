@@ -10,7 +10,7 @@ const LEVEL = {
 }
 
 /**
-* Sets up a success return JSON 
+* Sets up a success return JSON
 * @param data - JSON - The data to be returned
 * @return JSON - The return data
 		-data: the data to be returned
@@ -24,7 +24,7 @@ function succ(data){
 * Sets up an error return JSON
 * @param msg - String - The error message
 * @return JSON - The return error message
-		-data: 
+		-data:
 			-error: the error message
 		-success: false
 */
@@ -46,10 +46,10 @@ module.exports.getTasks = function(db, game_data){
 		if(res === 0){
 			return error("Error reading from database.");
 		}
-		
+
 		const tpl = game_data.settings.tasksPerLevel;
 		const tasks = select(game_data, res, tpl);
-		
+
 		return succ({
 			gameid:game_data.gameid,
 			players: game_data.players,
@@ -60,13 +60,13 @@ module.exports.getTasks = function(db, game_data){
 			end: tasks.end,
 			any: tasks.any
 		});
-		
+
 	})
 	.catch(err => {
 		console.log(err);
 		return error("Error starting game.");
 	});
-	
+
 }
 
 /**
@@ -77,10 +77,10 @@ module.exports.getTasks = function(db, game_data){
 function retrieveTasks(db){
 	const tasks = {};
 	const error = {};
-		
+
 	return db.getCol('first')
 	.then(res => {
-		tasks['first'] = res;	
+		tasks['first'] = res;
 		return db.getCol('second');
 	})
 	.then(res => {
@@ -104,13 +104,14 @@ function retrieveTasks(db){
 		return tasks;
 	})
 	.catch(err => {
+		console.log(err);
 		return 0;
 	});
 }
 
 /**
 * Selects tasks from each level.
-* @param game_data - JSON - The game information like players 
+* @param game_data - JSON - The game information like players
 		and game settings
 * @param res - JSON - The list of tasks in the database
 * @param tpl - int - The tasks per level
@@ -123,12 +124,12 @@ function select(game_data, res, tpl){
 	tasks['fourth'] = selectTasks(res.fourth, tpl, game_data.players, 3%game_data.players.length);
 	tasks['end'] = selectTasks(res.end, tpl, game_data.players, 4%game_data.players.length);
 	tasks['any'] = selectTasks(res.any, tpl, game_data.players, 5%game_data.players.length);
-	
+
 	return tasks;
 }
 
 /**
-* Selects random tasks from a specific level. Determines wildcards, 
+* Selects random tasks from a specific level. Determines wildcards,
 	drinks, and players involved
 * @param tasks - JSON - List of all tasks in specific level
 * @param tpl - int - Tasks per level
@@ -137,24 +138,24 @@ function select(game_data, res, tpl){
 */
 function selectTasks(tasks, tpl, players, cur){
 	const select = [];
-	
+
 	const s = Math.min(tasks.length, tpl);
 	for(let i=0; i< s; i++){
 		if(tasks.length <= 0){
 			break;
 		}
-		
+
 		let rand = Math.floor(Math.random() * tasks.length);
 		let task = tasks[rand];
 		tasks.splice(rand, 1);
-		
+
 		let t = selectPlayers(task.Task, players, cur);
-		
+
 		while(t === -1){
 			if(tasks.length <= 0){
 				break;
 			}
-			
+
 			rand = Math.floor(Math.random() * tasks.length);
 			task = tasks[rand];
 			tasks.splice(rand, 1);
@@ -171,11 +172,11 @@ function selectTasks(tasks, tpl, players, cur){
 			task.Twist = twist;
 		}
 		task.Drinks = selectDrinks(task.Drinks);
-	
-		
-		
-		
-		select.push(task);		
+
+
+
+
+		select.push(task);
 		cur++;
 		if(cur >= players.length){
 			cur = 0;
@@ -185,7 +186,7 @@ function selectTasks(tasks, tpl, players, cur){
 }
 
 /**
-* Selects players to be involved in the task. Selects current 
+* Selects players to be involved in the task. Selects current
 	player and random players
 * @param task - String - The task description
 * @param players - Array - The list of players in the game
@@ -194,18 +195,18 @@ function selectTasks(tasks, tpl, players, cur){
 */
 function selectPlayers(task, players, cur_player){
 	if(!players || !players.length || !task) return task;
-	
+
 	if(players.length <= 0){
-		return task;		
+		return task;
 	}
-	
+
 	let temp = players.slice(0);
-	
+
 	const single = task.match(/@[^\d]{1}|@$/g);
 	const spec = task.match(/@[\d]{1}/g);
 	if(!single || single.length === 0){
 		if(!spec) return task;
-		
+
 		if(spec.length > temp.length){
 			return -1;
 		}
@@ -224,14 +225,14 @@ function selectPlayers(task, players, cur_player){
 		if(single.length > temp.length){
 			return -1;
 		}
-		
+
 		let count = 0;
 		for(let i=cur_player; count<single.length; i++){
 			if(i >= players.length ){
 				i=-1;
 				continue;
 			}
-			
+
 			if(i===cur_player){
 				task = task.replace(/@/, temp[i].name);
 				temp.splice(i,1);
@@ -241,13 +242,13 @@ function selectPlayers(task, players, cur_player){
 				task = task.replace(/@/, temp[rand].name);
 				temp.splice(rand, 1);
 			}
-			
+
 			count++;
-			
+
 			if(i === cur_player - 1) break;
 		}
-		
-		
+
+
 	}
 	return task;
 }
@@ -259,7 +260,7 @@ function selectPlayers(task, players, cur_player){
 */
 function selectWildcards(task){
 	if(!task['Wildcard']) return task.Task;
-	
+
 	const wc = task.Wildcard.split(',');
 	const desc = task.Task;
 	const new_wc = wc[ Math.floor(Math.random() * wc.length)];
@@ -273,11 +274,11 @@ function selectWildcards(task){
 */
 function selectTwist(twist){
 	if(!twist) return;
-	
+
 	const twists = twist.split('/');
 	return twists[Math.floor(Math.random() * twists.length)];
-	
-	
+
+
 }
 
 /**
@@ -289,8 +290,8 @@ function selectDrinks(drinks){
 	if(!drinks) return "1";
 	if(isNaN(drinks)) return "1";
 	if(!drinks.split) return "1";
-	
+
 	const d = drinks.split(',');
 	return d[Math.floor(Math.random() * d.length)];
-	
+
 }
