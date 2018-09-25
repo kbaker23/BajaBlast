@@ -78,7 +78,6 @@ function setEvents(socket, callback){
 	});
 	socket.on('close', function(){
 		removeSocketList(socket);
-		console.log('close');
 	});
 }
 
