@@ -211,7 +211,7 @@ function selectPlayers(task, players, cur_player){
 		}
 		const p = [temp[cur_player]];
 		temp.splice(cur_player, 1);
-		task = task.replace(/@1/, p[0]);
+		task = task.replace(/@1/, p[0].name);
 		let count = 1;
 		while(count < spec.length){
 			const rand = Math.floor(Math.random() * temp.length);
