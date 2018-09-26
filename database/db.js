@@ -1,62 +1,26 @@
-const stitch = require('mongodb-stitch');
+const mongo = require('mongodb');
+const promisify = require('util').promisify;
+const conn = promisify(mongo.MongoClient.connect);
 
+const URI = 'mongodb://admin18:KbJcNsAp18@cluster0-shard-00-00-2xl5d.mongodb.net:27017,cluster0-shard-00-01-2xl5d.mongodb.net:27017,cluster0-shard-00-02-2xl5d.mongodb.net:27017/Tasks?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true';
 
-const URI = 'database-xqhvb';
-const TASK_DB = 'Tasks';
-
-function clientPromise(){
-	return stitch.StitchClientFactory.create(URI);
-}
-
-
-function clientAuth(name){
-	const cli = clientPromise();
-	return cli.then(client => {
-		const db = client.service("mongodb", "mongodb-atlas").db(name);
-		return {db, client};
-	});
-}
-
-module.exports.DB = class{
-	
-	constructor(db_name){
-		this.db_name = db_name;
+module.exports.DB = class DB{
+	constructor(name){
+		this.db_name = name;
 	}
-	
+
 	async login(){
 		try{
-			const res = await clientAuth(this.db_name);
-			this.client = res.client;
-			this.db = res.db;
-			await this.client.login();
+			const dbo = await conn(URI, {useNewUrlParser: true});
+			this.db = dbo.db('Tasks');
 		}
 		catch(err){
 			console.log(err);
 		}
 	}
-	
-	getCol(col){
-		return this.db.collection(col).find({}).execute().then( res => {
-			return res;
-		});
-	}
-	
-	
-}
 
-module.exports.getTask = function(col, callback){
-	const cli = clientPromise();
-	cli.then(client => {
-		const db = client.service('mongodb', 'mongodb-atlas').db(TASK_DB);
-		client.login().then( () => {
-			
-			db.collection(col).find({}).execute().then( res => {
-				
-				callback(false, res);
-			}).catch(err => {
-				
-				callback(true, err);
-			});
-		});
-	});
-};
+	getCol(col){
+		const collection = this.db.collection(col);
+		return collection.find({}).toArray();
+	}
+}

@@ -27,7 +27,6 @@ module.exports.createDatabase = async function(name){
 const sockets_lst = {};
 module.exports.createSocket = function(server){
 	const sock = sockjs.createServer({sockjs_url: "http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js", log: function(severity, msg){
-		console.log(severity, msg);
 	}
 	});
 	sock.installHandlers(server, {prefix: '/api'});

@@ -77,7 +77,6 @@ module.exports.getTasks = function(db, game_data){
 function retrieveTasks(db){
 	const tasks = {};
 	const error = {};
-
 	return db.getCol('first')
 	.then(res => {
 		tasks['first'] = res;

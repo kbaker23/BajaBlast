@@ -235,10 +235,10 @@ function startGame(data){
 				GAMES[data.gameid]['start'] = true;
 				const end = new Date();
 				const dif = end - start;
-				console.log(dif);
 				return res;
 			})
 			.catch(err=> {
+				console.log(err);
 				return error('Error retrieving tasks.');
 			});
 
