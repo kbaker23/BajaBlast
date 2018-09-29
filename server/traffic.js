@@ -9,5 +9,5 @@ module.exports.analyzer = function(socket){
     time: new Date()
   };
   DATA.conn.push(info);
-  console.log(DATA, '/n', socket);
+  console.log(DATA, '/n', socket.ws);
 }
