@@ -1,5 +1,6 @@
 const sockjs = require('sockjs');
 const DB = require('../database/db.js');
+const analyzer = require('./traffic.js');
 
 'use strict'
 
@@ -36,6 +37,7 @@ let db = '';
 module.exports.start = function(sock, dbase, callback){
 	db= dbase;
 	sock.on('connection', function (socket){
+		analyzer.analyzer(socket);
 		setEvents(socket, callback);
 	});
 }
