@@ -15,7 +15,7 @@ module.exports.analyzer = function(socket){
     if(conn[country]){
       if(conn[country][region]){
           if(conn[country][region][city]){
-            conn[country][region][city].push(new Date());
+            conn[country][region][city].time.push(new Date());
           }
           else{
             conn[country][region][city] = {
@@ -39,11 +39,10 @@ module.exports.analyzer = function(socket){
       };
     }
 
-    console.log(conn);
+    console.log(conn[country][region][city]);
   }
   else{
     console.log('Cannot find ip');
   }
-
 
 }
