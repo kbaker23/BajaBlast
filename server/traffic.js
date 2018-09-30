@@ -11,6 +11,7 @@ module.exports.analyzer = function(socket){
     const region = loc.region;
     const country = loc.country;
 
+    const conn = DATA.conn;
     if(conn[country]){
       if(conn[country][region]){
           if(conn[country][region][city]){
