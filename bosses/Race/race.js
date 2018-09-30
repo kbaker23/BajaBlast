@@ -39,8 +39,8 @@ const Race = {
 		if(time <= 0){
 			return {error: 'The time is too small. Must be > 0'};
 		}
-		if(time <= num_checkpoints){
-			return {error: 'There are too many intervals for given time. Intervals < time'};
+		if(time <= num_checkpoints + 1){
+			return {error: 'There are too many intervals for given time. Intervals + 1 < time'};
 		}
 		
 		if(num_players <= 0){
@@ -78,7 +78,7 @@ const Race = {
 			results[i] = res;
 		}
 		
-		return results;
+		return {res: results};
 	}, 
 	get_possible: function(time){
 		if(Race.num_checkpoints <= 0){
@@ -88,6 +88,7 @@ const Race = {
 		let list = [];
 		const opts = [];
 		Race.possible(opts, 0, time, time, list);
+		list.splice(0,1);
 		const rand = Math.floor(Math.random() * list.length);
 		return list[rand];
 	},
@@ -130,4 +131,5 @@ const Race = {
 		}
 	}
 };
-
+const r = Race.race(20,4,4);
+console.log(r);
